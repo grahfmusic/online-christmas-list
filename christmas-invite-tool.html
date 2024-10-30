@@ -437,22 +437,21 @@
         }
     
         function addPerson(guest, listType) {
-            // Save the list before adding
-            saveList(function() {
-                // Save current state for undo
-                actionHistory.push({
-                    type: 'add',
-                    listType: listType,
-                    guest: guest
-                });
-    
-                if (listType === 'attending') {
-                    attendingGuests.push(guest);
-                } else {
-                    notAttendingGuests.push(guest);
-                }
-                renderList();
+            // Save current state for undo
+            actionHistory.push({
+                type: 'add',
+                listType: listType,
+                guest: guest
             });
+    
+            if (listType === 'attending') {
+                attendingGuests.push(guest);
+            } else {
+                notAttendingGuests.push(guest);
+            }
+            renderList();
+            // Automatically save the list after adding a new entry
+            saveList();
         }
     
         function addPersonPrompt(listType) {
@@ -463,22 +462,21 @@
         }
     
         function removePerson(listType, index) {
-            // Save the list before deleting
-            saveList(function() {
-                const guestList = listType === 'attending' ? attendingGuests : notAttendingGuests;
-                const removedGuest = guestList[index];
+            const guestList = listType === 'attending' ? attendingGuests : notAttendingGuests;
+            const removedGuest = guestList[index];
     
-                // Save action to history
-                actionHistory.push({
-                    type: 'delete',
-                    listType: listType,
-                    index: index,
-                    guest: removedGuest
-                });
-    
-                guestList.splice(index, 1);
-                renderList();
+            // Save action to history
+            actionHistory.push({
+                type: 'delete',
+                listType: listType,
+                index: index,
+                guest: removedGuest
             });
+    
+            guestList.splice(index, 1);
+            renderList();
+            // Automatically save the list after deleting an entry
+            saveList();
         }
     
         function sortList(listType, field) {
