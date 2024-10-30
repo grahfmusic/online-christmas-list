@@ -225,9 +225,3 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 - **Fonts**:
   - [Overpass](https://fonts.google.com/specimen/Overpass)
   - [Ubuntu Mono](https://fonts.google.com/specimen/Ubuntu+Mono)
-
----
-
-**Note:** Replace `https://github.com/grahfmusic/online-christmas-list.git` with the actual URL of your GitHub repository.
-
-Feel free to copy this content into a `README.md` file and include it in your GitHub project.
