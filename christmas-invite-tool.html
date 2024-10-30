@@ -267,481 +267,478 @@
 </head>
 <body>
 
-<div class="wrapper">
-    <div class="header">
-        <h1>Christmas 2024 Celebration Invitation</h1>
-        <p>Join us for a joyful holiday gathering!</p>
-    </div>
-    <div class="content">
-        <div class="lists-container">
-            <div class="list attending">
-                <h2>Attending</h2>
-                <!-- Sorting Buttons -->
-                <div class="sorting-buttons">
-                    <button onclick="sortList('attending', 'name')">Sort by Name</button>
-                    <button onclick="sortList('attending', 'company')">Sort by Company</button>
+    <div class="wrapper">
+        <div class="header">
+            <h1>Christmas 2024 Celebration Invitation</h1>
+            <p>Join us for a joyful holiday gathering!</p>
+        </div>
+        <div class="content">
+            <div class="lists-container">
+                <div class="list attending">
+                    <h2>Attending</h2>
+                    <!-- Sorting Buttons -->
+                    <div class="sorting-buttons">
+                        <button onclick="sortList('attending', 'name')">Sort by Name</button>
+                        <button onclick="sortList('attending', 'company')">Sort by Company</button>
+                    </div>
+                    <!-- Column Titles -->
+                    <div class="list-header" id="attending-header">
+                        <div class="checkbox-placeholder"></div>
+                        <div class="name-title">Name</div>
+                        <div class="company-title">Company</div>
+                        <div class="comments-title">Comments</div>
+                        <div class="delete-placeholder"></div>
+                    </div>
+                    <ul id="attending-list">
+                        <!-- The list items will be populated by JavaScript -->
+                    </ul>
                 </div>
-                <!-- Column Titles -->
-                <div class="list-header" id="attending-header">
-                    <div class="checkbox-placeholder"></div>
-                    <div class="name-title">Name</div>
-                    <div class="company-title">Company</div>
-                    <div class="comments-title">Comments</div>
-                    <div class="delete-placeholder"></div>
+                <div class="list not-attending">
+                    <h2>Not Attending</h2>
+                    <!-- Sorting Buttons -->
+                    <div class="sorting-buttons">
+                        <button onclick="sortList('not-attending', 'name')">Sort by Name</button>
+                        <button onclick="sortList('not-attending', 'company')">Sort by Company</button>
+                    </div>
+                    <!-- Column Titles -->
+                    <div class="list-header" id="not-attending-header">
+                        <div class="checkbox-placeholder"></div>
+                        <div class="name-title">Name</div>
+                        <div class="company-title">Company</div>
+                        <div class="comments-title">Comments</div>
+                        <div class="delete-placeholder"></div>
+                    </div>
+                    <ul id="not-attending-list">
+                        <!-- The list items will be populated by JavaScript -->
+                    </ul>
                 </div>
-                <ul id="attending-list">
-                    <!-- The list items will be populated by JavaScript -->
-                </ul>
-            </div>
-            <div class="list not-attending">
-                <h2>Not Attending</h2>
-                <!-- Sorting Buttons -->
-                <div class="sorting-buttons">
-                    <button onclick="sortList('not-attending', 'name')">Sort by Name</button>
-                    <button onclick="sortList('not-attending', 'company')">Sort by Company</button>
-                </div>
-                <!-- Column Titles -->
-                <div class="list-header" id="not-attending-header">
-                    <div class="checkbox-placeholder"></div>
-                    <div class="name-title">Name</div>
-                    <div class="company-title">Company</div>
-                    <div class="comments-title">Comments</div>
-                    <div class="delete-placeholder"></div>
-                </div>
-                <ul id="not-attending-list">
-                    <!-- The list items will be populated by JavaScript -->
-                </ul>
             </div>
         </div>
+        <div class="button-group">
+            <button onclick="addPersonPrompt('attending')">Add Attendee</button>
+            <button onclick="addPersonPrompt('not-attending')">Add Not Attending</button>
+            <button onclick="saveList()">Save List</button>
+            <button onclick="undo()">Undo</button>
+            <button onclick="saveToPDF()">Save as PDF</button>
+            <button onclick="saveToSpreadsheet()">Save as Spreadsheet</button>
+        </div>
+        <!-- Notification Area -->
+        <div id="notification"></div>
     </div>
-    <div class="button-group">
-        <button onclick="addPersonPrompt('attending')">Add Attendee</button>
-        <button onclick="addPersonPrompt('not-attending')">Add Not Attending</button>
-        <button onclick="saveList()">Save List</button>
-        <button onclick="undo()">Undo</button>
-        <button onclick="saveToPDF()">Save as PDF</button>
-        <button onclick="saveToSpreadsheet()">Save as Spreadsheet</button>
-    </div>
-    <!-- Notification Area -->
-    <div id="notification"></div>
-</div>
-<script>
-    // Data arrays to hold the guest information
-    let attendingGuests = [];
-    let notAttendingGuests = [];
-
-    // Action history for undo functionality
-    let actionHistory = [];
-
-    // Sorting state
-    let sortStates = {
-        'attending': { field: null, order: 'asc' },
-        'not-attending': { field: null, order: 'asc' }
-    };
-
-    function renderList() {
-        // Clear existing list items
-        document.getElementById('attending-list').innerHTML = '';
-        document.getElementById('not-attending-list').innerHTML = '';
-
-        // Render attending guests
-        attendingGuests.forEach((guest, index) => {
-            const listItem = createListItem(guest, 'attending', index);
-            document.getElementById('attending-list').appendChild(listItem);
-        });
-
-        // Render not attending guests
-        notAttendingGuests.forEach((guest, index) => {
-            const listItem = createListItem(guest, 'not-attending', index);
-            document.getElementById('not-attending-list').appendChild(listItem);
-        });
-    }
-
-    function createListItem(guest, listType, index) {
-        const listItem = document.createElement('li');
-        if (listType === 'not-attending') {
-            listItem.classList.add('not-attending');
+    <script>
+        // Data arrays to hold the guest information
+        let attendingGuests = [];
+        let notAttendingGuests = [];
+    
+        // Action history for undo functionality
+        let actionHistory = [];
+    
+        // Sorting state
+        let sortStates = {
+            'attending': { field: null, order: 'asc' },
+            'not-attending': { field: null, order: 'asc' }
+        };
+    
+        function renderList() {
+            // Clear existing list items
+            document.getElementById('attending-list').innerHTML = '';
+            document.getElementById('not-attending-list').innerHTML = '';
+    
+            // Render attending guests
+            attendingGuests.forEach((guest, index) => {
+                const listItem = createListItem(guest, 'attending', index);
+                document.getElementById('attending-list').appendChild(listItem);
+            });
+    
+            // Render not attending guests
+            notAttendingGuests.forEach((guest, index) => {
+                const listItem = createListItem(guest, 'not-attending', index);
+                document.getElementById('not-attending-list').appendChild(listItem);
+            });
         }
-
-        listItem.innerHTML = `
-            <div class="checkbox-cell">
-                <input type="checkbox" class="select-person" onclick="toggleEditMode(this)">
-            </div>
-            <div class="person-name">${guest.name}</div>
-            <input type="text" class="name-input" value="${guest.name}" style="display: none;">
-            <div class="company-text">${guest.company || ''}</div>
-            <input type="text" class="company-input" placeholder="Company" value="${guest.company || ''}" style="display: none;">
-            <div class="comments-text">${guest.comments || ''}</div>
-            <input type="text" class="comments-input" placeholder="Comments" value="${guest.comments || ''}" style="display: none;">
-            <div class="delete-cell">
-                <button onclick="removePerson('${listType}', ${index})">Delete</button>
-            </div>
-        `;
-
-        return listItem;
-    }
-
-    function toggleEditMode(checkbox) {
-        const listItem = checkbox.closest('li');
-        const isEditing = checkbox.checked;
-
-        const nameInput = listItem.querySelector('.name-input');
-        const nameText = listItem.querySelector('.person-name');
-        const companyInput = listItem.querySelector('.company-input');
-        const companyText = listItem.querySelector('.company-text');
-        const commentsInput = listItem.querySelector('.comments-input');
-        const commentsText = listItem.querySelector('.comments-text');
-
-        if (isEditing) {
-            nameInput.style.display = 'flex';
-            nameText.style.display = 'none';
-            companyInput.style.display = 'flex';
-            companyText.style.display = 'none';
-            commentsInput.style.display = 'flex';
-            commentsText.style.display = 'none';
-        } else {
-            // Save current state for undo
-            const listType = listItem.parentElement.id === 'attending-list' ? 'attending' : 'not-attending';
-            const index = Array.from(listItem.parentElement.children).indexOf(listItem);
+    
+        function createListItem(guest, listType, index) {
+            const listItem = document.createElement('li');
+            if (listType === 'not-attending') {
+                listItem.classList.add('not-attending');
+            }
+    
+            listItem.innerHTML = `
+                <div class="checkbox-cell">
+                    <input type="checkbox" class="select-person" onclick="toggleEditMode(this)">
+                </div>
+                <div class="person-name">${guest.name}</div>
+                <input type="text" class="name-input" value="${guest.name}" style="display: none;">
+                <div class="company-text">${guest.company || ''}</div>
+                <input type="text" class="company-input" placeholder="Company" value="${guest.company || ''}" style="display: none;">
+                <div class="comments-text">${guest.comments || ''}</div>
+                <input type="text" class="comments-input" placeholder="Comments" value="${guest.comments || ''}" style="display: none;">
+                <div class="delete-cell">
+                    <button onclick="removePerson('${listType}', ${index})">Delete</button>
+                </div>
+            `;
+    
+            return listItem;
+        }
+    
+        function toggleEditMode(checkbox) {
+            const listItem = checkbox.closest('li');
+            const isEditing = checkbox.checked;
+    
+            const nameInput = listItem.querySelector('.name-input');
+            const nameText = listItem.querySelector('.person-name');
+            const companyInput = listItem.querySelector('.company-input');
+            const companyText = listItem.querySelector('.company-text');
+            const commentsInput = listItem.querySelector('.comments-input');
+            const commentsText = listItem.querySelector('.comments-text');
+    
+            if (isEditing) {
+                nameInput.style.display = 'flex';
+                nameText.style.display = 'none';
+                companyInput.style.display = 'flex';
+                companyText.style.display = 'none';
+                commentsInput.style.display = 'flex';
+                commentsText.style.display = 'none';
+            } else {
+                // Save current state for undo
+                const listType = listItem.parentElement.id === 'attending-list' ? 'attending' : 'not-attending';
+                const index = Array.from(listItem.parentElement.children).indexOf(listItem);
+                const guestList = listType === 'attending' ? attendingGuests : notAttendingGuests;
+                const oldGuest = { ...guestList[index] };
+    
+                // Update guest data with input values
+                guestList[index].name = nameInput.value.trim() || guestList[index].name;
+                guestList[index].company = companyInput.value.trim();
+                guestList[index].comments = commentsInput.value.trim();
+    
+                nameText.textContent = guestList[index].name || 'Name';
+                companyText.textContent = guestList[index].company || '';
+                commentsText.textContent = guestList[index].comments || '';
+    
+                nameInput.style.display = 'none';
+                nameText.style.display = 'flex';
+                companyInput.style.display = 'none';
+                companyText.style.display = 'flex';
+                commentsInput.style.display = 'none';
+                commentsText.style.display = 'flex';
+    
+                // Save action to history
+                actionHistory.push({
+                    type: 'edit',
+                    listType: listType,
+                    index: index,
+                    oldGuest: oldGuest,
+                    newGuest: { ...guestList[index] }
+                });
+    
+                // Save the list after editing
+                saveList();
+            }
+        }
+    
+        function addPerson(guest, listType) {
+            // Save the list before adding
+            saveList(function() {
+                // Save current state for undo
+                actionHistory.push({
+                    type: 'add',
+                    listType: listType,
+                    guest: guest
+                });
+    
+                if (listType === 'attending') {
+                    attendingGuests.push(guest);
+                } else {
+                    notAttendingGuests.push(guest);
+                }
+                renderList();
+            });
+        }
+    
+        function addPersonPrompt(listType) {
+            const personName = prompt("Enter the name of the person:");
+            if (personName) {
+                addPerson({ name: personName, company: '', comments: '' }, listType);
+            }
+        }
+    
+        function removePerson(listType, index) {
+            // Save the list before deleting
+            saveList(function() {
+                const guestList = listType === 'attending' ? attendingGuests : notAttendingGuests;
+                const removedGuest = guestList[index];
+    
+                // Save action to history
+                actionHistory.push({
+                    type: 'delete',
+                    listType: listType,
+                    index: index,
+                    guest: removedGuest
+                });
+    
+                guestList.splice(index, 1);
+                renderList();
+            });
+        }
+    
+        function sortList(listType, field) {
             const guestList = listType === 'attending' ? attendingGuests : notAttendingGuests;
-            const oldGuest = { ...guestList[index] };
-
-            // Update guest data with input values
-            guestList[index].name = nameInput.value.trim() || guestList[index].name;
-            guestList[index].company = companyInput.value.trim();
-            guestList[index].comments = commentsInput.value.trim();
-
-            nameText.textContent = guestList[index].name || 'Name';
-            companyText.textContent = guestList[index].company || '';
-            commentsText.textContent = guestList[index].comments || '';
-
-            nameInput.style.display = 'none';
-            nameText.style.display = 'flex';
-            companyInput.style.display = 'none';
-            companyText.style.display = 'flex';
-            commentsInput.style.display = 'none';
-            commentsText.style.display = 'flex';
-
+            const prevState = [...guestList.map(guest => ({ ...guest }))];
+    
+            // Determine sort order
+            let order = 'asc';
+            if (sortStates[listType].field === field && sortStates[listType].order === 'asc') {
+                order = 'desc';
+            }
+    
+            // Perform sorting
+            guestList.sort((a, b) => {
+                let fieldA = (a[field] || '').toLowerCase();
+                let fieldB = (b[field] || '').toLowerCase();
+    
+                if (fieldA < fieldB) return order === 'asc' ? -1 : 1;
+                if (fieldA > fieldB) return order === 'asc' ? 1 : -1;
+                return 0;
+            });
+    
+            // Update sort state
+            sortStates[listType] = { field: field, order: order };
+    
             // Save action to history
             actionHistory.push({
-                type: 'edit',
+                type: 'sort',
                 listType: listType,
-                index: index,
-                oldGuest: oldGuest,
-                newGuest: { ...guestList[index] }
+                prevState: prevState,
+                field: field,
+                order: order
             });
-
-            // Save the list after editing
+    
+            renderList();
+            // Save the list after sorting
             saveList();
         }
-    }
-
-    function addPerson(guest, listType) {
-        // Save the list before adding
-        saveList(function() {
-            // Save current state for undo
-            actionHistory.push({
-                type: 'add',
-                listType: listType,
-                guest: guest
-            });
-
-            if (listType === 'attending') {
-                attendingGuests.push(guest);
-            } else {
-                notAttendingGuests.push(guest);
+    
+        function undo() {
+            if (actionHistory.length === 0) {
+                alert('Nothing to undo.');
+                return;
             }
-            renderList();
-        });
-    }
-
-    function addPersonPrompt(listType) {
-        const personName = prompt("Enter the name of the person:");
-        if (personName) {
-            addPerson({ name: personName, company: '', comments: '' }, listType);
-        }
-    }
-
-    function removePerson(listType, index) {
-        // Save the list before deleting
-        saveList(function() {
-            const guestList = listType === 'attending' ? attendingGuests : notAttendingGuests;
-            const removedGuest = guestList[index];
-
-            // Save action to history
-            actionHistory.push({
-                type: 'delete',
-                listType: listType,
-                index: index,
-                guest: removedGuest
-            });
-
-            guestList.splice(index, 1);
-            renderList();
-        });
-    }
-
-    function sortList(listType, field) {
-        const guestList = listType === 'attending' ? attendingGuests : notAttendingGuests;
-        const prevState = [...guestList.map(guest => ({ ...guest }))];
-
-        // Determine sort order
-        let order = 'asc';
-        if (sortStates[listType].field === field && sortStates[listType].order === 'asc') {
-            order = 'desc';
-        }
-
-        // Perform sorting
-        guestList.sort((a, b) => {
-            let fieldA = (a[field] || '').toLowerCase();
-            let fieldB = (b[field] || '').toLowerCase();
-
-            if (fieldA < fieldB) return order === 'asc' ? -1 : 1;
-            if (fieldA > fieldB) return order === 'asc' ? 1 : -1;
-            return 0;
-        });
-
-        // Update sort state
-        sortStates[listType] = { field: field, order: order };
-
-        // Save action to history
-        actionHistory.push({
-            type: 'sort',
-            listType: listType,
-            prevState: prevState,
-            field: field,
-            order: order
-        });
-
-        renderList();
-        // Save the list after sorting
-        saveList();
-    }
-
-    function undo() {
-        if (actionHistory.length === 0) {
-            alert('Nothing to undo.');
-            return;
-        }
-
-        const lastAction = actionHistory.pop();
-
-        if (lastAction.type === 'add') {
-            const guestList = lastAction.listType === 'attending' ? attendingGuests : notAttendingGuests;
-            guestList.pop();
-        } else if (lastAction.type === 'delete') {
-            const guestList = lastAction.listType === 'attending' ? attendingGuests : notAttendingGuests;
-            guestList.splice(lastAction.index, 0, lastAction.guest);
-        } else if (lastAction.type === 'edit') {
-            const guestList = lastAction.listType === 'attending' ? attendingGuests : notAttendingGuests;
-            guestList[lastAction.index] = lastAction.oldGuest;
-        } else if (lastAction.type === 'sort') {
-            const guestList = lastAction.listType === 'attending' ? attendingGuests : notAttendingGuests;
-            guestList.length = 0;
-            guestList.push(...lastAction.prevState);
-            sortStates[lastAction.listType] = { field: null, order: 'asc' };
-        }
-
-        renderList();
-        // Save the list after undo
-        saveList();
-    }
-
-    function saveList(callback) {
-        // Update guest data with current input values
-        updateGuestData();
-
-        // Prepare data as JSON
-        const data = JSON.stringify({
-            attendingGuests: attendingGuests,
-            notAttendingGuests: notAttendingGuests
-        });
-
-        // Send data to the server via AJAX
-        const xhr = new XMLHttpRequest();
-        xhr.open("POST", "save_guest_list.php", true);
-        xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
-        xhr.onload = function() {
-            if (xhr.status === 200) {
-                showNotification('List saved successfully!', 'green');
-                if (callback) callback();
-            } else {
-                showNotification('Error saving list: ' + xhr.responseText, 'red');
+    
+            const lastAction = actionHistory.pop();
+    
+            if (lastAction.type === 'add') {
+                const guestList = lastAction.listType === 'attending' ? attendingGuests : notAttendingGuests;
+                guestList.pop();
+            } else if (lastAction.type === 'delete') {
+                const guestList = lastAction.listType === 'attending' ? attendingGuests : notAttendingGuests;
+                guestList.splice(lastAction.index, 0, lastAction.guest);
+            } else if (lastAction.type === 'edit') {
+                const guestList = lastAction.listType === 'attending' ? attendingGuests : notAttendingGuests;
+                guestList[lastAction.index] = lastAction.oldGuest;
+            } else if (lastAction.type === 'sort') {
+                const guestList = lastAction.listType === 'attending' ? attendingGuests : notAttendingGuests;
+                guestList.length = 0;
+                guestList.push(...lastAction.prevState);
+                sortStates[lastAction.listType] = { field: null, order: 'asc' };
             }
-        };
-        xhr.onerror = function() {
-            showNotification('Error saving list.', 'red');
-        };
-        xhr.send("data=" + encodeURIComponent(data));
-    }
-
-    function updateGuestData() {
-        // Update attending guests
-        const attendingListItems = document.querySelectorAll('#attending-list li');
-        attendingListItems.forEach((item, index) => {
-            const nameInput = item.querySelector('.name-input');
-            const companyInput = item.querySelector('.company-input');
-            const commentsInput = item.querySelector('.comments-input');
-
-            attendingGuests[index].name = nameInput.value.trim() || attendingGuests[index].name;
-            attendingGuests[index].company = companyInput.value.trim();
-            attendingGuests[index].comments = commentsInput.value.trim();
-        });
-        // Update not attending guests
-        const notAttendingListItems = document.querySelectorAll('#not-attending-list li');
-        notAttendingListItems.forEach((item, index) => {
-            const nameInput = item.querySelector('.name-input');
-            const companyInput = item.querySelector('.company-input');
-            const commentsInput = item.querySelector('.comments-input');
-
-            notAttendingGuests[index].name = nameInput.value.trim() || notAttendingGuests[index].name;
-            notAttendingGuests[index].company = companyInput.value.trim();
-            notAttendingGuests[index].comments = commentsInput.value.trim();
-        });
-    }
-
-    function loadGuestList() {
-        // Fetch data from the server via AJAX
-        const xhr = new XMLHttpRequest();
-        xhr.open("GET", "load_guest_list.php", true);
-        xhr.onload = function() {
-            if (xhr.status === 200) {
-                try {
-                    const data = JSON.parse(xhr.responseText);
-                    attendingGuests = data.attendingGuests;
-                    notAttendingGuests = data.notAttendingGuests;
-                    renderList();
-                    showNotification('List loaded successfully!', 'green');
-                } catch (e) {
-                    showNotification('Error parsing data.', 'red');
-                    initializeDefaultGuests();
+    
+            renderList();
+            // Save the list after undo
+            saveList();
+        }
+    
+        // Define your API token (should be stored securely)
+        const apiToken = 'f6210ea7848bf16861d850de1b7f5449ce1e2b4bfdf6b27bfeeb9019b0645f93'; // Replace with the same token set in PHP
+    
+        function saveList(callback) {
+            // Update guest data with current input values
+            updateGuestData();
+    
+            // Prepare data as JSON
+            const data = JSON.stringify({
+                attendingGuests: attendingGuests,
+                notAttendingGuests: notAttendingGuests
+            });
+    
+            // Send data to the server via AJAX
+            const xhr = new XMLHttpRequest();
+            xhr.open("POST", "save_guest_list.php", true);
+            xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+            xhr.setRequestHeader("Authorization", "Bearer " + apiToken); // Set Authorization header
+            xhr.onload = function() {
+                if (xhr.status === 200) {
+                    const response = JSON.parse(xhr.responseText);
+                    if (response.status === 'success') {
+                        showNotification(response.message, 'green');
+                        if (callback) callback();
+                    } else {
+                        showNotification(response.message, 'red');
+                    }
+                } else {
+                    try {
+                        const response = JSON.parse(xhr.responseText);
+                        showNotification(response.message || 'Error saving data', 'red');
+                    } catch (e) {
+                        showNotification('Error saving data', 'red');
+                    }
                 }
-            } else {
-                // Initialize with default guests if no data
-                initializeDefaultGuests();
-                showNotification('No saved list found. Loaded default list.', 'orange');
-            }
-        };
-        xhr.onerror = function() {
-            // Initialize with default guests if error occurs
-            initializeDefaultGuests();
-            showNotification('Error loading list. Loaded default list.', 'red');
-        };
-        xhr.send();
-    }
-
-    function initializeDefaultGuests() {
-        attendingGuests = [
-            { name: 'Mark Francis', company: '', comments: '' },
-            { name: 'Michael Fawke', company: '', comments: '' },
-            { name: 'Lawrence Tso', company: '', comments: '' },
-            { name: 'Tony Perkins', company: '', comments: '' },
-            { name: 'Ada Perkins', company: '', comments: '' },
-            { name: 'Graeme Lane', company: '', comments: '' },
-            { name: 'Srinivas Kareti', company: '', comments: '' },
-            { name: 'Karl Habres', company: '', comments: '' },
-            { name: 'Margaret Dine', company: '', comments: '' },
-            { name: 'Nevin Temby', company: '', comments: '' },
-            { name: 'Ann Coll', company: '', comments: '' },
-        ];
-
-        notAttendingGuests = [
-            { name: 'Peter Crowley', company: '', comments: '' },
-        ];
-
-        renderList();
-    }
-
-    function saveToPDF() {
-        updateGuestData();
-
-        const { jsPDF } = window.jspdf;
-        const doc = new jsPDF();
-
-        doc.setFont('helvetica', 'bold');
-        doc.setFontSize(16);
-        doc.text('Christmas 2024 Invitation List', 14, 20);
-
-        // Prepare data for the table
-        const tableColumn = ["Status", "Name", "Company", "Comments"];
-        const tableRows = [];
-
-        attendingGuests.forEach((guest) => {
-            tableRows.push(["Attending", guest.name, guest.company, guest.comments]);
-        });
-
-        notAttendingGuests.forEach((guest) => {
-            tableRows.push(["Not Attending", guest.name, guest.company, guest.comments]);
-        });
-
-        // AutoTable options
-        doc.autoTable({
-            head: [tableColumn],
-            body: tableRows,
-            startY: 30,
-            styles: { fontSize: 10 },
-            headStyles: { fillColor: [204, 0, 0] },
-            columnStyles: {
-                0: { cellWidth: 30 }, // Status
-                1: { cellWidth: 40 }, // Name
-                2: { cellWidth: 50 }, // Company
-                3: { cellWidth: 60 }, // Comments
-            },
-            margin: { left: 14, right: 14 },
-            didDrawPage: function (data) {
-                // Header
-                doc.setFontSize(16);
-                doc.setTextColor(40);
-                doc.text("Christmas 2024 Invitation List", data.settings.margin.left, 20);
-            },
-        });
-
-        doc.save('Christmas_Invitation_List.pdf');
-    }
-
-    function saveToSpreadsheet() {
-        updateGuestData();
-
-        let wb = XLSX.utils.book_new();
-        let ws_data = [['Status', 'Name', 'Company', 'Comments']];
-
-        attendingGuests.forEach((guest) => {
-            ws_data.push(['Attending', guest.name, guest.company, guest.comments]);
-        });
-
-        notAttendingGuests.forEach((guest) => {
-            ws_data.push(['Not Attending', guest.name, guest.company, guest.comments]);
-        });
-
-        let ws = XLSX.utils.aoa_to_sheet(ws_data);
-
-        // Set column widths
-        ws['!cols'] = [
-            { wch: 15 }, // Status
-            { wch: 20 }, // Name
-            { wch: 30 }, // Company
-            { wch: 30 }, // Comments
-        ];
-
-        XLSX.utils.book_append_sheet(wb, ws, 'Christmas Invitation List');
-
-        XLSX.writeFile(wb, 'Christmas_Invitation_List.xlsx');
-    }
-
-    function showNotification(message, color) {
-        const notification = document.getElementById('notification');
-        notification.style.display = 'block';
-        notification.style.color = color;
-        notification.textContent = message;
-        setTimeout(() => {
-            notification.style.display = 'none';
-        }, 3000);
-    }
-
-    window.onload = function() {
-        loadGuestList();
-    }
-</script>
+            };
+            xhr.onerror = function() {
+                showNotification('Error saving data.', 'red');
+            };
+            xhr.send("data=" + encodeURIComponent(data));
+        }
+    
+        function loadGuestList() {
+            // Send request to the server via AJAX
+            const xhr = new XMLHttpRequest();
+            xhr.open("GET", "load_guest_list.php", true);
+            xhr.setRequestHeader("Authorization", "Bearer " + apiToken); // Set Authorization header
+            xhr.onload = function() {
+                if (xhr.status === 200) {
+                    const response = JSON.parse(xhr.responseText);
+                    if (response.status === 'success') {
+                        attendingGuests = response.data.attendingGuests || [];
+                        notAttendingGuests = response.data.notAttendingGuests || [];
+                        renderList();
+                        showNotification('List loaded successfully!', 'green');
+                    } else {
+                        showNotification(response.message, 'red');
+                    }
+                } else {
+                    try {
+                        const response = JSON.parse(xhr.responseText);
+                        showNotification(response.message || 'Error loading data', 'red');
+                    } catch (e) {
+                        showNotification('Error loading data', 'red');
+                    }
+                }
+            };
+            xhr.onerror = function() {
+                showNotification('Error loading data.', 'red');
+            };
+            xhr.send();
+        }
+    
+        // Function to update guest data from input fields (Ensure this function is defined)
+        function updateGuestData() {
+            // Update attending guests
+            const attendingListItems = document.querySelectorAll('#attending-list li');
+            attendingListItems.forEach((item, index) => {
+                const nameInput = item.querySelector('.name-input');
+                const companyInput = item.querySelector('.company-input');
+                const commentsInput = item.querySelector('.comments-input');
+    
+                attendingGuests[index].name = nameInput.value.trim() || attendingGuests[index].name;
+                attendingGuests[index].company = companyInput.value.trim();
+                attendingGuests[index].comments = commentsInput.value.trim();
+            });
+            // Update not attending guests
+            const notAttendingListItems = document.querySelectorAll('#not-attending-list li');
+            notAttendingListItems.forEach((item, index) => {
+                const nameInput = item.querySelector('.name-input');
+                const companyInput = item.querySelector('.company-input');
+                const commentsInput = item.querySelector('.comments-input');
+    
+                notAttendingGuests[index].name = nameInput.value.trim() || notAttendingGuests[index].name;
+                notAttendingGuests[index].company = companyInput.value.trim();
+                notAttendingGuests[index].comments = commentsInput.value.trim();
+            });
+        }
+    
+        // Save the list when the page loads
+        window.onload = function() {
+            loadGuestList();
+        }
+    
+        // Function to show notifications (Ensure this function is defined)
+        function showNotification(message, color) {
+            const notification = document.getElementById('notification');
+            notification.style.display = 'block';
+            notification.style.color = color;
+            notification.textContent = message;
+            setTimeout(() => {
+                notification.style.display = 'none';
+            }, 3000);
+        }
+    
+        // Functions to save to PDF and Spreadsheet (Ensure these functions are defined)
+        function saveToPDF() {
+            updateGuestData();
+    
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+    
+            doc.setFont('helvetica', 'bold');
+            doc.setFontSize(16);
+            doc.text('Christmas 2024 Invitation List', 14, 20);
+    
+            // Prepare data for the table
+            const tableColumn = ["Status", "Name", "Company", "Comments"];
+            const tableRows = [];
+    
+            attendingGuests.forEach((guest) => {
+                tableRows.push(["Attending", guest.name, guest.company, guest.comments]);
+            });
+    
+            notAttendingGuests.forEach((guest) => {
+                tableRows.push(["Not Attending", guest.name, guest.company, guest.comments]);
+            });
+    
+            // AutoTable options
+            doc.autoTable({
+                head: [tableColumn],
+                body: tableRows,
+                startY: 30,
+                styles: { fontSize: 10 },
+                headStyles: { fillColor: [204, 0, 0] },
+                columnStyles: {
+                    0: { cellWidth: 30 }, // Status
+                    1: { cellWidth: 40 }, // Name
+                    2: { cellWidth: 50 }, // Company
+                    3: { cellWidth: 60 }, // Comments
+                },
+                margin: { left: 14, right: 14 },
+                didDrawPage: function (data) {
+                    // Header
+                    doc.setFontSize(16);
+                    doc.setTextColor(40);
+                    doc.text("Christmas 2024 Invitation List", data.settings.margin.left, 20);
+                },
+            });
+    
+            doc.save('Christmas_Invitation_List.pdf');
+        }
+    
+        function saveToSpreadsheet() {
+            updateGuestData();
+    
+            let wb = XLSX.utils.book_new();
+            let ws_data = [['Status', 'Name', 'Company', 'Comments']];
+    
+            attendingGuests.forEach((guest) => {
+                ws_data.push(['Attending', guest.name, guest.company, guest.comments]);
+            });
+    
+            notAttendingGuests.forEach((guest) => {
+                ws_data.push(['Not Attending', guest.name, guest.company, guest.comments]);
+            });
+    
+            let ws = XLSX.utils.aoa_to_sheet(ws_data);
+    
+            // Set column widths
+            ws['!cols'] = [
+                { wch: 15 }, // Status
+                { wch: 20 }, // Name
+                { wch: 30 }, // Company
+                { wch: 30 }, // Comments
+            ];
+    
+            XLSX.utils.book_append_sheet(wb, ws, 'Christmas Invitation List');
+    
+            XLSX.writeFile(wb, 'Christmas_Invitation_List.xlsx');
+        }
+    </script>
 
 </body>
 </html>
