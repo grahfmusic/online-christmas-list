@@ -1,4 +1,5 @@
 # Christmas Invitation Management Tool
+## Version 0.1
 
 Welcome to the **Christmas Invitation Management Tool**! This web application is designed to help manage the guest list for our upcoming holiday celebration. It provides an intuitive interface to add, edit, and organize guest information efficiently.
 
