@@ -1,7 +1,3 @@
-Here is an updated version of your README file for release version 1.0. I've included additional details regarding how the tool works, its features and functions, technologies used, data storage methods, and specific Nginx and Apache configurations.
-
----
-
 # Christmas Invitation Management Tool
 
 ## Version 1.01 :: Created by Grahf 2024 (Dean Thomson)
