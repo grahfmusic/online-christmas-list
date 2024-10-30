@@ -1,5 +1,9 @@
+Here is an updated version of your README file for release version 1.0. I've included additional details regarding how the tool works, its features and functions, technologies used, data storage methods, and specific Nginx and Apache configurations.
+
+---
+
 # Christmas Invitation Management Tool
-## Version 0.1
+## Version 1.0
 
 Welcome to the **Christmas Invitation Management Tool**! This web application is designed to help manage the guest list for our upcoming holiday celebration. It provides an intuitive interface to add, edit, and organize guest information efficiently.
 
@@ -20,6 +24,9 @@ Welcome to the **Christmas Invitation Management Tool**! This web application is
   - [Saving Changes](#saving-changes)
   - [Undoing Actions](#undoing-actions)
   - [Exporting the Guest List](#exporting-the-guest-list)
+- [Web Server Configuration](#web-server-configuration)
+  - [Nginx Configuration](#nginx-configuration)
+  - [Apache Configuration](#apache-configuration)
 - [Security](#security)
 - [Contributing](#contributing)
 - [License](#license)
@@ -41,7 +48,7 @@ These instructions will help you set up and run the project on your local machin
 ### Prerequisites
 
 - **Web Server**: Apache, Nginx, or any web server capable of running PHP scripts.
-- **PHP**: Version 5.3.0 or higher with OpenSSL extension enabled.
+- **PHP**: Version 7.0 or higher with OpenSSL extension enabled.
 - **Browser**: A modern web browser (Google Chrome, Mozilla Firefox, Microsoft Edge).
 
 ### Installation
@@ -49,7 +56,7 @@ These instructions will help you set up and run the project on your local machin
 1. **Clone the repository:**
 
    ```bash
-   https://github.com/grahfmusic/online-christmas-list.git
+   git clone https://github.com/grahfmusic/online-christmas-list.git
    ```
 
 2. **Navigate to the project directory:**
@@ -122,6 +129,59 @@ These instructions will help you set up and run the project on your local machin
 
 - **As PDF**: Click **"Save as PDF"** to download a PDF version.
 - **As Spreadsheet**: Click **"Save as Spreadsheet"** to download an Excel file.
+
+## Web Server Configuration
+
+### Nginx Configuration
+
+To set up Nginx to properly handle PHP requests and serve this tool, add the following configuration block to your Nginx server block:
+
+```nginx
+server {
+    listen 80;
+    server_name yourdomain.com;
+
+    root /path/to/christmas-invitation-tool;
+    index index.html index.php;
+
+    location / {
+        try_files $uri $uri/ =404;
+    }
+
+    location ~ \\.php$ {
+        include snippets/fastcgi-php.conf;
+        fastcgi_pass unix:/var/run/php/php7.4-fpm.sock;
+    }
+
+    location ~ /guest_list\\.dat$ {
+        deny all;
+    }
+}
+```
+
+### Apache Configuration
+
+To set up Apache to properly handle PHP requests and serve this tool, add the following configuration to your virtual host:
+
+```apache
+<VirtualHost *:80>
+    ServerName yourdomain.com
+    DocumentRoot /path/to/christmas-invitation-tool
+
+    <Directory /path/to/christmas-invitation-tool>
+        Options Indexes FollowSymLinks
+        AllowOverride All
+        Require all granted
+    </Directory>
+
+    <Files "guest_list.dat">
+        Require all denied
+    </Files>
+
+    ErrorLog ${APACHE_LOG_DIR}/error.log
+    CustomLog ${APACHE_LOG_DIR}/access.log combined
+</VirtualHost>
+```
 
 ## Security
 
