@@ -3,7 +3,8 @@ Here is an updated version of your README file for release version 1.0. I've inc
 ---
 
 # Christmas Invitation Management Tool
-## Version 1.0
+
+## Version 1.01 :: Created by Grahf 2024 (Dean Thomson)
 
 Welcome to the **Christmas Invitation Management Tool**! This web application is designed to help manage the guest list for our upcoming holiday celebration. It provides an intuitive interface to add, edit, and organize guest information efficiently.
 
@@ -94,6 +95,7 @@ These instructions will help you set up and run the project on your local machin
 ### Adding a New Guest
 
 - **To the Attending List:**
+
   1. Click **"Add Attendee"**.
   2. Enter the guest's name.
   3. The guest will appear in the **Attending** list.
