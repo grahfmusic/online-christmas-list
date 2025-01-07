@@ -4,6 +4,11 @@
 
 Welcome to the **Christmas Invitation Management Tool**! This web application is designed to help manage the guest list for our upcoming holiday celebration. It provides an intuitive interface to add, edit, and organize guest information efficiently.
 
+### Why This Tool Was Created  
+
+The company I work for needed a quick, centralised tool that could be used repeatedly on our internal servers to easily generate PDFs, spreadsheets, or CSV files for the yearly Christmas party attendee list. Some employees, not being technical, struggled with version control, leading to a confusing mess of attendee lists. It became increasingly difficult to determine which version was accurate. To resolve this issue for all future events, this tool was created in just an hour, ensuring a straightforward and efficient solution.  
+
+
 ![screenshot](scnshot.png?raw=true "screenshot")
 
 ## Table of Contents
